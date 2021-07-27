@@ -4,7 +4,7 @@ function filteredDB() {
     db.forEach(user => {
         const data = {
             id: user.id,
-            name: user.name,
+            name: user.name.toLowerCase(),
             role: user.roles[0].role,
             enterprise: user.enterprises[0].enterprise || undefined
         }

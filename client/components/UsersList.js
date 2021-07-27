@@ -1,16 +1,34 @@
 import { useState, useEffect } from 'react'
 import Head from 'next/head'
-import Icon from './Icon'
+import Grid from './Grid'
 import MatchList from './MatchList'
 const UsersList = () => {
     const [users, setUsers] = useState([])
     const [fetched, setFetched] = useState(false)
     const [user, setMatch] = useState([])
     const [userExist, setExist] = useState(false)
+    const [search, setSearch] = useState('')
+    const [searchList, setSearchList] = useState([])
 
     useEffect(() => {
         fetchHandler()
     }, [])
+
+    useEffect(() => {
+        function filterUsers() {
+            const searchArray = []
+            users.filter((user) => {
+                if (user.name.search(search) > -1) {
+                    searchArray.push(user)
+                }
+            })
+            return searchArray
+        }
+        const userFiltered = filterUsers()
+        if (search != '') { setSearchList(userFiltered) }
+        if (search == '') { setSearchList([]) }
+    }, [search])
+
     const fetchHandler = async () => {
         const res = await fetch('http://localhost:8080/api/users', {
             method: 'GET',
@@ -23,7 +41,7 @@ const UsersList = () => {
         setFetched(true)
         setExist(false)
     }
-
+    
     async function matchHandler(id) {
         const user = {
             id: id
@@ -60,32 +78,16 @@ const UsersList = () => {
                     <title>Users</title>
                     <link rel="icon" href="/favicon.ico" />
                 </Head>
-                <div className='p-2 w-full'>
+                <div className='p-2 w-full min-h-screen '>
                     <h1 className='font-semibold text-gray-800 text-center mb-4 text-3xl'>Users </h1>
-                    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3'>
-                        {users.map((user) => (
-                            <button key={user.id} className='hover:cursor-pointer ' onClick={() => { matchHandler(user.id) }}>
-                                <div className='flex flex-col  bg-white bg-opacity-80 hover:bg-opacity-100 shadow-sm rounded-md capitalize p-4  font-semibold mx-auto w-7/12 sm:w-full text-purple-700' >
-                                    <Icon user={user.id} icon={'/id.svg'} />
-                                    <Icon user={user.name} icon={'/nametag.svg'} />
-                                    <Icon user={user.role} icon={'/circle.svg'} />
-                                    {user.enterprise ? <Icon user={user.enterprise} icon={'/enterprise.svg'} /> : <Icon user='No' icon={'/enterprise.svg'} />}
-                                </div>
-                            </button>
-                        ))}
+                    <div className='flex items-center justify-center mb-4'>
+                        <input type='text' className='w-1/2 p-2 rounded-md outline-none text-purple-700' placeholder='Name' onChange={(e) => { setSearch((e.target.value.toLowerCase())) }}></input>
                     </div>
+                    {searchList.length == 0 ? <Grid users={users} handler={matchHandler} /> : <Grid users={searchList} handler={matchHandler} />}
                 </div>
             </>)
     } else {
-        return (<>
-        </>)
+        return (<></>)
     }
 }
-
-//UTILS 
-
-
-
-
-
 export default UsersList
