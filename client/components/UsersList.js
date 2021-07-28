@@ -66,7 +66,7 @@ const UsersList = () => {
                     <link rel="icon" href="/favicon.ico" />
                 </Head>
                 <div className='p-2 w-full'>
-                    <h1 className='font-semibold text-gray-800 text-center my-4 text-4xl'>Matchs for <span className='text-purple-700'>{user.name}</span></h1>
+                    <h1 className='font-semibold text-gray-800 text-center my-4 text-4xl'>Matchs for <span className='text-purple-700 capitalize'>{user.name}</span></h1>
                     <MatchList user={user} handler={fetchHandler} />
                 </div>
             </>)
